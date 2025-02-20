@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Deaf Ed Tech</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .dashboard-container {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .welcome-box {
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+        }
+        .welcome-box h1 {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        .welcome-box p {
+            font-size: 1.3rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0056b3;
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .nav-link:hover {
+            color: #ffc107 !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Deaf Ed Tech</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+                <li class="nav-item"><a class="nav-link text-danger" href="/logout/">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 🌟 Welcome Section -->
+<div class="welcome-box text-center py-5" style="background: linear-gradient(to right, #0056b3, #007bff); color: white; border-radius: 12px; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);">
+    <h1 class="fw-bold">
+        Welcome, <span id="animatedText">{{ user.get_full_name|default:user.username|title }}</span>! 👋
+    </h1>
+    <p class="mt-3" style="font-size: 1.2rem; opacity: 0.9;">Your personalized learning space is here. Explore and enjoy!</p>
+    <button class="btn btn-light btn-lg mt-3 px-5 fw-bold" onclick="location.href='/update-profile/'" style="border-radius: 30px; transition: 0.3s;">
+        Update Profile
+    </button>
+</div>
+
+
+
+    <!-- 📊 Progress Tracker Section -->
+<div class="progress-container py-5 text-center">
+    <h3 class="mb-4" style="color: #0056b3; font-weight: bold;">
+        <i class="bi bi-bar-chart-fill"></i> Your Learning Progress
+    </h3>
+
+    <div class="container">
+        <!-- Numbers Signing Progress -->
+        <div class="row align-items-center mb-3">
+            <div class="col-2 text-end">
+                <i class="bi bi-123 text-primary" style="font-size: 2.5rem;"></i>
+            </div>
+            <div class="col-8">
+                <h6 class="fw-bold text-start">Numbers Signing</h6>
+                <div class="progress" style="height: 12px; background-color: #e9ecef;">
+                    <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated"
+                        role="progressbar" style="width: 70%;" id="numbersProgress">70%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alphabet Signing Progress -->
+        <div class="row align-items-center mb-3">
+            <div class="col-2 text-end">
+                <i class="bi bi-fonts text-success" style="font-size: 2.5rem;"></i>
+            </div>
+            <div class="col-8">
+                <h6 class="fw-bold text-start">Alphabet Signing</h6>
+                <div class="progress" style="height: 12px; background-color: #e9ecef;">
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                        role="progressbar" style="width: 50%;" id="alphabetProgress">50%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sign Language Phrases Progress -->
+        <div class="row align-items-center">
+            <div class="col-2 text-end">
+                <i class="bi bi-chat-text text-warning" style="font-size: 2.5rem;"></i>
+            </div>
+            <div class="col-8">
+                <h6 class="fw-bold text-start">Sign Language Phrases</h6>
+                <div class="progress" style="height: 12px; background-color: #e9ecef;">
+                    <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated"
+                        role="progressbar" style="width: 30%;" id="phrasesProgress">30%</div>
+                </div>
+            </div>
+        </div>
+    </div>  
+</div>
+
+
+
+    <!-- Dashboard Cards -->
+    <div class="row g-4 mt-4">
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <i class="bi bi-123" style="font-size: 4rem; color: #0056b3;"></i>
+                    <h5 class="card-title mt-3">Numbers (Signing)</h5>
+                    <p class="card-text text-muted">Master signing numbers through engaging games designed to enhance your skills.</p>
+                    <a href="/numbers-games/" class="btn btn-outline-primary rounded-pill px-4">Start Learning</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <i class="bi bi-fonts" style="font-size: 4rem; color: #28a745;"></i>
+                    <h5 class="card-title mt-3">Alphabets (Signing)</h5>
+                    <p class="card-text text-muted">Improve your signing skills by practicing the alphabet with interactive exercises.</p>
+                    <a href="#" class="btn btn-outline-success rounded-pill px-4">Start Learning</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <i class="bi bi-translate" style="font-size: 4rem; color: #ffc107;"></i>
+                    <h5 class="card-title mt-3">Basic SA Sign Translator</h5>
+                    <p class="card-text text-muted">Learn essential South African sign language phrases with this helpful translator.</p>
+                    <a href="#" class="btn btn-outline-warning rounded-pill px-4">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 Deaf Ed Tech. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

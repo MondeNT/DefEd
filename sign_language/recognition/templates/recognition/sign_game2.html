@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Game</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #4CAF50;
+            margin: 20px 0;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+        }
+        h2, h3 {
+            color: #555;
+            margin: 10px 0;
+        }
+        h3#timer {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff5722;
+        }
+        img {
+            border: 3px solid black;
+            margin: 20px 0;
+            border-radius: 5px;
+            width: 300px;
+            height: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .button-container {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .button-container button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .button-container button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        .option-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .option-btn:hover {
+            background-color: #45a049;
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+    </style>
+    <script>
+        let timeRemaining = {{ remaining_time|floatformat:1 }}; // Remaining time passed from backend
+        const startTime = Date.now(); // Record the start time for tracking
+
+        function startTimer() {
+            const timerElement = document.getElementById("timer");
+            const form = document.getElementById("gameForm");
+
+            const countdown = setInterval(() => {
+                const elapsed = (Date.now() - startTime) / 1000; // Calculate elapsed time
+                const newRemainingTime = timeRemaining - elapsed;
+
+                if (newRemainingTime > 0) {
+                    timerElement.textContent = `Time Remaining: ${newRemainingTime.toFixed(1)} seconds`;
+                } else {
+                    clearInterval(countdown);
+                    alert("Time's up!");
+                    form.submit(); // Automatically submit the form when time is up
+                }
+            }, 100); // Update every 100ms for smoother display
+        }
+
+        window.onload = startTimer;
+    </script>
+</head>
+<body>
+    <h1>Sign Language Game</h1>
+    <h2>Round {{ round_number }}</h2>
+    <h3>Score: {{ score }}</h3>
+    <h3 id="timer">Time Remaining: {{ remaining_time|floatformat:1 }} seconds</h3>
+    {% load static %}
+    <img src="{% static 'overlay_images/'|add:current_sign_file %}" alt="Sign Image">
+    <form method="post" id="gameForm">
+        {% csrf_token %}
+        <input type="hidden" name="score" value="{{ score }}">
+        <input type="hidden" name="round_number" value="{{ round_number }}">
+        <input type="hidden" name="correct_option" value="{{ correct_option }}">
+        <input type="hidden" name="remaining_time" value="{{ remaining_time }}">
+        <input type="hidden" name="start_time" value="{{ start_time }}">
+        <div class="button-container">
+            {% for option in options %}
+                <button type="submit" class="option-btn" name="selected_option" value="{{ option }}">{{ option }}</button>
+            {% endfor %}
+        </div>
+    </form>
+    <footer>
+        <p>Game designed to help you learn sign language numbers. Good luck!</p>
+    </footer>
+</body>
+</html>

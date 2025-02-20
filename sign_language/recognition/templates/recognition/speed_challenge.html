@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Challenge</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #4CAF50;
+            margin: 20px 0;
+        }
+        p {
+            font-size: 18px;
+            color: #555;
+        }
+        img {
+            border: 3px solid black;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .button-container {
+            margin-top: 30px;
+        }
+        .button-container button {
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .button-container button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        .restart-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .restart-btn:hover {
+            background-color: #45a049;
+        }
+        .change-difficulty-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .change-difficulty-btn:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+    <h1>Speed Challenge</h1>
+    <p>Match the number shown on the screen with the correct hand gesture!</p>
+    <img src="/speed-challenge-feed/?level={{ level }}" width="640" height="480" alt="Speed Challenge">
+    <div class="button-container">
+        <button class="restart-btn" onclick="restartChallenge()">Restart</button>
+        <button class="change-difficulty-btn" onclick="changeDifficulty()">Change Difficulty</button>
+    </div>
+    <script>
+        function restartChallenge() {
+            // Reload the page with the same difficulty level
+            const params = new URLSearchParams(window.location.search);
+            const level = params.get('level') || 'medium';
+            window.location.href = `/speed-challenge/?level=${level}`;
+        }
+
+        function changeDifficulty() {
+            // Redirect the user to the difficulty selection page
+            window.location.href = "/select-difficulty/";
+        }
+
+       
+        var score = 0;  // Track the score
+        var level = "{{ level }}";  // Get the level from Django template
+        var gameOver = false;
+
+        // Function to handle game over and send score to the server
+        function sendScoreToServer(score, level) {
+            if (gameOver) return; // Prevent duplicate submissions
+            gameOver = true;
+
+            $.ajax({
+                type: "POST",
+                url: "/save-speed-score/",  // ✅ Matches Django URL pattern
+                data: {
+                    "score": score,
+                    "level": level,
+                    "csrfmiddlewaretoken": "{{ csrf_token }}"
+                },
+                success: function(response) {
+                    console.log("✅ Score saved:", response);
+                    alert("🎉 Game Over! Your score: " + score);
+                    window.location.href = "/leaderboard/";  // Redirect to leaderboard
+                },
+                error: function(xhr) {
+                    console.error("❌ Score saving failed:", xhr);
+                    alert("❌ Failed to save score.");
+                }
+            });
+        }
+
+        // Handle manual game end (useful for debugging)
+        document.getElementById("end-game-btn").addEventListener("click", function() {
+            sendScoreToServer(score, level);
+        });
+
+        // Function to update score dynamically (should be called in-game)
+        function updateScore(newScore) {
+            score = newScore;
+            document.getElementById("score").innerText = score;
+        }
+
+        // Function to update time left dynamically
+        function updateTimeLeft(time) {
+            document.getElementById("time-left").innerText = time;
+            if (time <= 0) {
+                sendScoreToServer(score, level); // Auto-submit when time runs out
+            }
+        }
+
+  
+    </script>
+</body>
+</html>

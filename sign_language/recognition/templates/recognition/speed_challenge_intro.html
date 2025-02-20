@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Play - Speed Challenge</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #e8f5e9, #c8e6c9);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Container */
+        .container {
+            max-width: 850px;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+            text-align: center;
+        }
+
+        /* Title */
+        h1 {
+            color: #4CAF50;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        /* Description */
+        p {
+            font-size: 18px;
+            color: #444;
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero img {
+            width: 90%;
+            max-width: 450px;
+            border-radius: 12px;
+            margin: 15px 0;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Game Instructions */
+        .instructions {
+            background: #f1f8e9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .instructions p {
+            font-weight: bold;
+            font-size: 20px;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions li {
+            font-size: 16px;
+            color: #333;
+            padding: 10px 0;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .instructions li::before {
+            content: "✔";
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        /* Button */
+        .button-container {
+            margin-top: 25px;
+        }
+
+        .start-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .start-btn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>How to Play - Speed Challenge</h1>
+        <p>Test your speed and accuracy by matching the number on the screen with the correct hand gesture before time runs out!</p>
+        
+        <div class="hero">
+            <img src="https://img.freepik.com/free-photo/pleased-confident-middleaged-woman-wearing-tshirt-looking-camera-showing-promise-gesture-isolated-olive-green-background_141793-136105.jpg" alt="Speed Challenge Game">
+        </div>
+
+        <div class="instructions">
+            <p>How to Play:</p>
+            <ul>
+                <li>A number will appear on the screen.</li>
+                <li>Use your hand to make the correct sign representing that number.</li>
+                <li>Make sure your hand is clearly visible to the camera.</li>
+                <li>Earn points for every correct match before the timer runs out.</li>
+                <li>The faster you are, the higher your score!</li>
+            </ul>
+        </div>
+
+        <p>Are you ready to challenge yourself?</p>
+        <div class="button-container">
+            <button class="start-btn" onclick="startGame()">Start Game</button>
+        </div>
+    </div>
+    
+    <script>
+        function startGame() {
+            window.location.href = "/select-difficulty/";
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    margin: 50px;
+}
+
+h1 {
+    color: #333;
+}
+
+.timer {
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+/* Game Layout */
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* Scrambled Sign Images (Placed on Top) */
+.sign-images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+}
+
+.sign-slot {
+    width: 120px;
+    height: 120px;
+    border: 2px dashed gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+.sign-slot img {
+    width: 100px;
+    height: 100px;
+}
+
+/* Numbers (Placed at Bottom) */
+.number-options {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.number {
+    width: 80px;
+    height: 80px;
+    border: 2px solid black;
+    background-color: #ddd;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+}
+
+.number:hover {
+    background-color: #bbb;
+}
+
+/* Button Styling */
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #218838;
+}
