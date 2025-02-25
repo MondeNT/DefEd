@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Grade</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #4CAF50, #81C784);
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .grade-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .grade-buttons button {
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: #4CAF50;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .grade-buttons button:hover {
+            background: #4CAF50;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Your Grade</h1>
+<div class="grade-buttons">
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" name="grade" value="grade_r">Grade R</button>
+        <button type="submit" name="grade" value="grade_1">Grade 1</button>
+        <button type="submit" name="grade" value="grade_2_3">Grade 2-3</button>
+    </form>
+</div>
+<footer>
+    <p>This game is designed to help students learn numbers and sign language in a fun way!</p>
+</footer>
+
+</body>
+</html>

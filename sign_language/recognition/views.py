@@ -18,81 +18,120 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import get_user_model
 from django.contrib import messages
+import time
 
-# Get the user model dynamically (for custom user models)
 User = get_user_model()
 
 def login_user(request):
     if request.method == "POST":
-        email = request.POST.get("email")
+        email = request.POST.get("email").strip().lower()  # Normalize email input
         password = request.POST.get("password")
 
-        try:
-            user = User.objects.get(email=email)  # Find user by email
-        except User.DoesNotExist:
-            user = None
+        # Find user by email (case-insensitive)
+        user = User.objects.filter(email__iexact=email).first()
 
-        if user:
-            user = authenticate(request, username=user.username, password=password)  # Authenticate using username
-
-        if user is not None:
-            login(request, user)
-            return redirect("dashboard")  # Redirect to dashboard
+        if user is None:
+            messages.error(request, "❌ No account found with this email.")
+            time.sleep(1)  # Adds a delay to prevent email enumeration attacks
         else:
-            messages.error(request, "❌ Invalid email or password. Please try again.")
+            if not user.is_active:
+                messages.error(request, "⚠️ Your account is inactive. Please contact support.")
+            else:
+                authenticated_user = authenticate(request, username=user.username, password=password)
+
+                if authenticated_user is not None:
+                    login(request, authenticated_user)
+                    return redirect("dashboard")  # Redirect to dashboard
+                else:
+                    messages.error(request, "❌ Incorrect password. Please try again.")
+                    time.sleep(1)  # Delays response to prevent brute-force attacks
 
     return render(request, "recognition/home.html")
+
 
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.contrib import messages
 from .models import PlayerProfile
 
 def sign_up(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        full_name = request.POST["full_name"]
-        email = request.POST["email"]
-        age = request.POST["age"]
-        gender = request.POST["gender"]
-        phone_number = request.POST["phone_number"]
-        password = request.POST["password"]
-        confirm_password = request.POST["confirm_password"]
+        username = request.POST.get("username")
+        full_name = request.POST.get("full_name", "Unknown")
+        email = request.POST.get("email")
+        age = request.POST.get("age")  # Fixing this below
+        gender = request.POST.get("gender", "Prefer not to say")
+        phone_number = request.POST.get("phone_number", "")
 
-        # Check if passwords match
+        # Preserve form data if there's an error
+        form_data = {
+            "username": username,
+            "full_name": full_name,
+            "email": email,
+            "age": age,
+            "gender": gender,
+            "phone_number": phone_number,
+        }
+
+        # Ensure passwords match
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
         if password != confirm_password:
-            return render(request, "recognition/sign_up.html", {"error": "Passwords do not match."})
+            messages.error(request, "Passwords do not match.")
+            return render(request, "recognition/sign_up.html", {"form_data": form_data})
 
-        # Check if username is already taken
+        # Check if username is taken
         if User.objects.filter(username=username).exists():
-            return render(request, "recognition/sign_up.html", {"error": "Username already exists."})
+            messages.error(request, "Username already exists.")
+            return render(request, "recognition/sign_up.html", {"form_data": form_data})
 
-        # Check if email is already registered
+        # Check if email is registered
         if User.objects.filter(email=email).exists():
-            return render(request, "recognition/sign_up.html", {"error": "Email is already registered."})
+            messages.error(request, "Email is already registered.")
+            return render(request, "recognition/sign_up.html", {"form_data": form_data})
 
-        # Create User in Django's built-in authentication system
-        user = User.objects.create_user(username=username, email=email, password=password)
-        user.save()
+        # ✅ Convert age to integer and validate
+        try:
+            age = int(age)
+            if age < 10 or age > 100:
+                messages.error(request, "Age must be between 10 and 100.")
+                return render(request, "recognition/sign_up.html", {"form_data": form_data})
+        except (ValueError, TypeError):
+            messages.error(request, "Invalid age. Please enter a valid number.")
+            return render(request, "recognition/sign_up.html", {"form_data": form_data})
 
-        # Create associated PlayerProfile
-        player_profile = PlayerProfile.objects.create(
-            user=user,
-            username=username,
-            full_name=full_name,
-            email=email,
-            age=age,
-            gender=gender,
-            phone_number=phone_number,
-        )
-        player_profile.save()
+        try:
+            # ✅ Create user
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.save()
 
-        # Log the user in and redirect to the dashboard or home
-        login(request, user)
-        return redirect("home")  # Redirect to home/dashboard after signup
+            # ✅ Create PlayerProfile
+            player_profile = PlayerProfile.objects.create(
+                user=user,
+                username=username,
+                full_name=full_name,
+                email=email,
+                age=age,  # Age is now properly set
+                gender=gender,
+                phone_number=phone_number
+            )
+            player_profile.save()
+
+            # ✅ Log the user in
+            login(request, user)
+
+            # ✅ Success message
+            messages.success(request, "Sign-up successful! Redirecting to your dashboard...")
+            return redirect("dashboard")
+
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+            return render(request, "recognition/sign_up.html", {"form_data": form_data})
 
     return render(request, "recognition/sign_up.html")
+
 
 
 @login_required
@@ -412,26 +451,69 @@ def home(request):
 
 
 
-def update_profile(request):
-    if request.method == 'POST':
-        # Handle form submission
-        full_name = request.POST.get('full_name')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-        phone_number = request.POST.get('phone_number')
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth.models import User
+from .models import PlayerProfile
 
-        # Validate inputs
-        if password != confirm_password:
-            return render(request, "update_profile.html", {
-                'error': "Passwords do not match",
-                'form_data': request.POST
-            })
-        
-        # Simulate saving updated data (replace this with database logic)
-        return render(request, "dashboard.html", {'message': "Profile updated successfully!"})
-    
-    return render(request, "recognition/update_profile.html")
+@login_required
+def update_profile(request):
+    user = request.user
+    profile, created = PlayerProfile.objects.get_or_create(user=user)
+
+    if request.method == "POST":
+        full_name = request.POST.get("full_name")
+        email = request.POST.get("email")
+        phone_number = request.POST.get("phone_number")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+
+        # Preserve form data for repopulation
+        form_data = {
+            "full_name": full_name,
+            "email": email,
+            "phone_number": phone_number,
+        }
+
+        # Validate email uniqueness
+        if User.objects.exclude(id=user.id).filter(email=email).exists():
+            messages.error(request, "This email is already taken.")
+            return render(request, "recognition/update_profile.html", {"form_data": form_data})
+
+        # Validate password match
+        if password and password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, "recognition/update_profile.html", {"form_data": form_data})
+
+        # Update user information
+        user.email = email
+        user.save()
+
+        # Update profile information
+        profile.full_name = full_name
+        profile.phone_number = phone_number
+        profile.save()
+
+        # Update password only if provided
+        if password:
+            user.set_password(password)
+            user.save()
+            messages.success(request, "Password updated. Please log in again.")
+            return redirect("login")  # Redirect to login after password change
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect("dashboard")  # Redirect to dashboard after updating
+
+    # Pass existing user data to form
+    form_data = {
+        "full_name": profile.full_name,
+        "email": user.email,
+        "phone_number": profile.phone_number,
+    }
+
+    return render(request, "recognition/update_profile.html", {"form_data": form_data})
+
 
 
 from django.shortcuts import render

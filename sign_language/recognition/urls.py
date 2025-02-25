@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import select_difficulty3, drag_drop_game, score3, sign_up, login_user, dashboard, select_difficulty3, drag_drop_game, store_drag_drop_score, score3, speed_challenge_intro  # ✅ Import views
+from .views import select_difficulty3, drag_drop_game, score3, sign_up, login_user, dashboard, select_difficulty3, drag_drop_game, store_drag_drop_score, score3, speed_challenge_intro, update_profile  # ✅ Import views
 
 urlpatterns = [
 
@@ -14,6 +14,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('numbers-games/', views.numbers_games, name='numbers_games'),  # Games under Numbers
     path('speed-challenge/', views.speed_challenge, name='speed_challenge'),  # Active Game
+    path("update-profile/", update_profile, name="update_profile"),
 
 
     path("select-difficulty2/", views.select_difficulty2, name="select_difficulty2"),

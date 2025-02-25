@@ -70,13 +70,3 @@ class Leaderboard(models.Model):
         ordering = ['-highest_score']  # Highest scores first
 
 
-# Signals to Auto-Create PlayerProfile for new Users
-@receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        PlayerProfile.objects.create(user=instance, username=instance.username, email=instance.email)
-
-
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    instance.playerprofile.save()
