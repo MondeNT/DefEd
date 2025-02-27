@@ -81,29 +81,41 @@
             {% endfor %}
         {% endif %}
 
-        <form method="POST">
+        <!-- ✅ Add enctype for image uploads -->
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
+            <!-- Avatar Upload -->
+            <div class="mb-3">
+                <label for="avatar" class="form-label">Upload Profile Picture</label>
+                <input type="file" class="form-control" id="avatar" name="avatar">
+            </div>
+
+            <!-- Username -->
             <div class="mb-3 input-group">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
                 <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" value="{{ form_data.username|default_if_none:'' }}" required>
             </div>
 
+            <!-- Full Name -->
             <div class="mb-3 input-group">
                 <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
                 <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Enter your full name" value="{{ form_data.full_name|default_if_none:'' }}" required>
             </div>
 
+            <!-- Email -->
             <div class="mb-3 input-group">
                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                 <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" value="{{ form_data.email|default_if_none:'' }}" required>
             </div>
 
+            <!-- Age -->
             <div class="mb-3 input-group">
                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                 <input type="number" class="form-control" id="age" name="age" placeholder="Enter your age" min="10" max="100" value="{{ form_data.age|default_if_none:'' }}" required>
             </div>
 
+            <!-- Gender -->
             <div class="mb-3">
                 <label for="gender" class="form-label">Gender</label>
                 <select class="form-control" id="gender" name="gender" required>
@@ -115,16 +127,31 @@
                 </select>
             </div>
 
+            <!-- School -->
+            <div class="mb-3 input-group">
+                <span class="input-group-text"><i class="fas fa-school"></i></span>
+                <input type="text" class="form-control" id="school" name="school" placeholder="Enter your school name" value="{{ form_data.school|default_if_none:'' }}">
+            </div>
+
+            <!-- Grade -->
+            <div class="mb-3 input-group">
+                <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+                <input type="text" class="form-control" id="grade" name="grade" placeholder="Enter your grade" value="{{ form_data.grade|default_if_none:'' }}">
+            </div>
+
+            <!-- Phone Number -->
             <div class="mb-3 input-group">
                 <span class="input-group-text"><i class="fas fa-phone"></i></span>
                 <input type="tel" class="form-control" id="phone_number" name="phone_number" placeholder="Enter your phone number" value="{{ form_data.phone_number|default_if_none:'' }}">
             </div>
 
+            <!-- Password -->
             <div class="mb-3 input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
                 <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
             </div>
 
+            <!-- Confirm Password -->
             <div class="mb-3 input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
                 <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>

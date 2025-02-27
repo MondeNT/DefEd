@@ -103,70 +103,11 @@
         <h1>Welcome, <span id="animatedText">{{ user.get_full_name|default:user.username|title }}</span>! 👋</h1>
         <p>Your personalized learning space is here. Explore and enjoy!</p>
         <!-- Update Profile Button -->
-<button class="btn btn-primary btn-lg mt-3 px-5 fw-bold" style="border-radius: 30px;" data-bs-toggle="modal" data-bs-target="#updateProfileModal">
-    Update Profile
-</button>
+        <a href="{% url 'update_profile' %}" class="btn btn-primary btn-lg mt-3 px-5 fw-bold" style="border-radius: 30px;">
+            Update Profile
+        </a>
 
-<!-- Bootstrap Modal for Profile Update -->
-<div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="updateProfileModalLabel">Edit Your Profile</h5>
-                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="{% url 'update_profile' %}">
-                    {% csrf_token %}
 
-                    <!-- Full Name -->
-                    <div class="mb-3 d-flex align-items-center">
-                        <label for="full_name" class="form-label flex-grow-1">Full Name</label>
-                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="enableEdit('full_name')">Update</button>
-                    </div>
-                    <input type="text" class="form-control" id="full_name" name="full_name" value="{{ full_name|default:'' }}" readonly required>
-
-                    <!-- Email -->
-                    <div class="mb-3 d-flex align-items-center">
-                        <label for="email" class="form-label flex-grow-1">Email Address</label>
-                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="enableEdit('email')">Update</button>
-                    </div>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ email|default:'' }}" readonly required>
-
-                    <!-- Phone Number -->
-                    <div class="mb-3 d-flex align-items-center">
-                        <label for="phone_number" class="form-label flex-grow-1">Phone Number</label>
-                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="enableEdit('phone_number')">Update</button>
-                    </div>
-                    <input type="tel" class="form-control" id="phone_number" name="phone_number" value="{{ phone_number|default:'' }}" readonly required>
-
-                    <!-- Password (Optional) -->
-                    <div class="mb-3">
-                        <label for="password" class="form-label">New Password (Optional)</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password">
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm new password">
-                    </div>
-
-                    <!-- Confirm Changes Button -->
-                    <button type="submit" class="btn btn-success w-100 mt-3">Confirm Changes</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- JavaScript to Enable Editing -->
-<script>
-    function enableEdit(fieldId) {
-        document.getElementById(fieldId).removeAttribute('readonly');
-        document.getElementById(fieldId).focus();
-    }
-</script>
 
     </div>
 </div>

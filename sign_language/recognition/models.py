@@ -6,7 +6,7 @@ from django.dispatch import receiver
 # Player Profile Model
 class PlayerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    username = models.CharField(max_length=50, unique=True)  # Unique username
+    username = models.CharField(max_length=50, unique=True)
     full_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     age = models.PositiveIntegerField()
@@ -19,11 +19,16 @@ class PlayerProfile(models.Model):
     ]
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+
+    # ✅ Ensure these fields exist
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    school = models.CharField(max_length=150, blank=True, null=True)
+    grade = models.CharField(max_length=20, blank=True, null=True)
+
     date_joined = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.username} ({self.full_name})"
-
 
 # Game Model
 class Game(models.Model):

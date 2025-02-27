@@ -61,9 +61,15 @@ def sign_up(request):
         username = request.POST.get("username")
         full_name = request.POST.get("full_name", "Unknown")
         email = request.POST.get("email")
-        age = request.POST.get("age")  # Fixing this below
+        age = request.POST.get("age")
         gender = request.POST.get("gender", "Prefer not to say")
         phone_number = request.POST.get("phone_number", "")
+        school = request.POST.get("school", "")
+        grade = request.POST.get("grade", "")
+        avatar = request.FILES.get("avatar")  # ✅ Get the uploaded file
+
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
 
         # Preserve form data if there's an error
         form_data = {
@@ -73,26 +79,24 @@ def sign_up(request):
             "age": age,
             "gender": gender,
             "phone_number": phone_number,
+            "school": school,
+            "grade": grade,
         }
 
-        # Ensure passwords match
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
+        # Validate passwords match
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
             return render(request, "recognition/sign_up.html", {"form_data": form_data})
 
-        # Check if username is taken
+        # Check if username or email is taken
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
             return render(request, "recognition/sign_up.html", {"form_data": form_data})
-
-        # Check if email is registered
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email is already registered.")
             return render(request, "recognition/sign_up.html", {"form_data": form_data})
 
-        # ✅ Convert age to integer and validate
+        # Convert age to integer
         try:
             age = int(age)
             if age < 10 or age > 100:
@@ -102,35 +106,32 @@ def sign_up(request):
             messages.error(request, "Invalid age. Please enter a valid number.")
             return render(request, "recognition/sign_up.html", {"form_data": form_data})
 
-        try:
-            # ✅ Create user
-            user = User.objects.create_user(username=username, email=email, password=password)
-            user.save()
+        # ✅ Create User and Profile
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.save()
 
-            # ✅ Create PlayerProfile
-            player_profile = PlayerProfile.objects.create(
-                user=user,
-                username=username,
-                full_name=full_name,
-                email=email,
-                age=age,  # Age is now properly set
-                gender=gender,
-                phone_number=phone_number
-            )
-            player_profile.save()
+        player_profile = PlayerProfile.objects.create(
+            user=user,
+            username=username,
+            full_name=full_name,
+            email=email,
+            age=age,
+            gender=gender,
+            phone_number=phone_number,
+            school=school,
+            grade=grade,
+            avatar=avatar,  # ✅ Save avatar
+        )
+        player_profile.save()
 
-            # ✅ Log the user in
-            login(request, user)
+        # Log the user in
+        login(request, user)
 
-            # ✅ Success message
-            messages.success(request, "Sign-up successful! Redirecting to your dashboard...")
-            return redirect("dashboard")
-
-        except Exception as e:
-            messages.error(request, f"An error occurred: {str(e)}")
-            return render(request, "recognition/sign_up.html", {"form_data": form_data})
+        messages.success(request, "Sign-up successful! Redirecting to your dashboard...")
+        return redirect("dashboard")
 
     return render(request, "recognition/sign_up.html")
+
 
 
 
@@ -466,6 +467,10 @@ def update_profile(request):
         full_name = request.POST.get("full_name")
         email = request.POST.get("email")
         phone_number = request.POST.get("phone_number")
+        school = request.POST.get("school", "")
+        grade = request.POST.get("grade", "")
+        avatar = request.FILES.get("avatar")  # ✅ Get uploaded avatar
+
         password = request.POST.get("password")
         confirm_password = request.POST.get("confirm_password")
 
@@ -474,6 +479,9 @@ def update_profile(request):
             "full_name": full_name,
             "email": email,
             "phone_number": phone_number,
+            "school": school,
+            "grade": grade,
+            "avatar": profile.avatar.url if profile.avatar else None,  # ✅ Fetch existing avatar
         }
 
         # Validate email uniqueness
@@ -490,9 +498,13 @@ def update_profile(request):
         user.email = email
         user.save()
 
-        # Update profile information
+        # ✅ Update profile information
         profile.full_name = full_name
         profile.phone_number = phone_number
+        profile.school = school
+        profile.grade = grade
+        if avatar:
+            profile.avatar = avatar  # ✅ Save new avatar if uploaded
         profile.save()
 
         # Update password only if provided
@@ -500,16 +512,19 @@ def update_profile(request):
             user.set_password(password)
             user.save()
             messages.success(request, "Password updated. Please log in again.")
-            return redirect("login")  # Redirect to login after password change
+            return redirect("login")
 
         messages.success(request, "Profile updated successfully!")
-        return redirect("dashboard")  # Redirect to dashboard after updating
+        return redirect("dashboard")
 
-    # Pass existing user data to form
+    # ✅ Ensure all existing data is passed to the form
     form_data = {
         "full_name": profile.full_name,
         "email": user.email,
         "phone_number": profile.phone_number,
+        "school": profile.school if profile.school else "",
+        "grade": profile.grade if profile.grade else "",
+        "avatar": profile.avatar.url if profile.avatar else None,
     }
 
     return render(request, "recognition/update_profile.html", {"form_data": form_data})
