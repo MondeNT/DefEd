@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-08_=@hfbkc-e0tv8y31vrq)@_tuz2(50($#_gh3b$urfq8=!j)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["defed.onrender.com", "127.0.0.1"]
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']  # Adjust based on your Django version
